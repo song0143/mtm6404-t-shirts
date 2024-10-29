@@ -1,12 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>T-Shirts</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
+
 <body>
-  
-  
+  <div id="root"></div>
+
+  <!-- Include t-shirts.js for data -->
+  <script type="text/babel" src="t-shirts.js"></script>
+
+  <!-- React code embedded here directly -->
+  <script type="text/babel">
+    const { useState } = React;
+
+    function TShirtStore() {
+      const [storeItems, setStoreItems] = useState(tshirts);
+
+      // Handle purchase of a T-shirt
+      const handleBuy = (index, quantity) => {
+        setStoreItems((prevItems) =>
+          prevItems.map((item, idx) =>
+            idx === index ? { ...item, stock: item.stock - quantity } : item
+          )
+        );
+      };
+
+      return (
+        <div>
+          <h1>T-Shirt Store</h1>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
+            {storeItems.map((item, index) => (
+              <div key={index} style={{ border: "1px solid #ccc", padding: "20px", width: "200px" }}>
+                <h2>{item.title}</h2>
+                <img src={`images/${item.image}`} alt={item.title} style={{ width: "100%" }} />
+                <p>Price: ${item.price.toFixed(2)}</p>
+                {item.stock > 0 ? (
+                  <>
+                    <p>Stock: {item.stock}</p>
+                    <select id={`quantity-${index}`}>
+                      {Array.from({ length: item.stock }, (_, i) => i + 1).map((num) => (
+                        <option key={num} value={num}>
+                          {num}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      onClick={() => {
+                        const quantity = parseInt(document.getElementById(`quantity-${index}`).value);
+                        handleBuy(index, quantity);
+                      }}
+                    >
+                      Buy
+                    </button>
+                  </>
+                ) : (
+                  <p style={{ color: "red" }}>Out of Stock</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Render the TShirtStore component
+    ReactDOM.render(<TShirtStore />, document.getElementById("root"));
+  </script>
 </body>
+
 </html>
